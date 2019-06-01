@@ -1,47 +1,91 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import BasicButton from './button';
+import React, { Component } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform
+} from "react-native";
+import BasicButton from "./button";
 
 class SignIn extends Component {
   state = {
-    login: '',
-    password: '',
-    isPasswordInvalid: false,
+    login: "",
+    password: "",
+    isPasswordValid: false,
+    isLoginValid: false,
     canSubmit: false
-  }
+  };
 
   /*
-  * Dodaj walidację hasła: musi mieć conajmniej 8 znaków
-  * canSubmit moe przyjąc true dopiero kiedy hasło jest poprawne oraz login nie jest pusty
-  */
+   * Dodaj walidację hasła: musi mieć conajmniej 8 znaków
+   * canSubmit moe przyjąc true dopiero kiedy hasło jest poprawne oraz login nie jest pusty
+   * niech dopiero wyswietla komunikat on change
+   */
 
+  validateForm = () => {
+    this.state.canSubmit =
+      this.state.isPasswordValid && this.state.isLoginValid;
+    console.log(this.state.isPasswordValid && this.state.isLoginValid);
+  };
+
+  setAndValidateLogin = text => {
+    const isLoginValid = text.length > 0;
+    this.setState({ login: text, isLoginValid });
+
+    this.validateForm();
+  };
+
+  setAndValidatePassword = text => {
+    const isPasswordValid = text.length > 8;
+    this.setState({ password: text, isPasswordValid });
+
+    this.validateForm();
+  };
+
+  mockLogin = () => {
+    console.log("Go to dashboard");
+  };
+
+  /*
+   * Stworzyć mock logina
+   * i hasła z przejsciem o do nowego ekranu
+   *
+   */
 
   render() {
     return (
-      <KeyboardAvoidingView style={styles.container}  behavior="padding" enabled={Platform.OS === 'ios'}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior="padding"
+        enabled={Platform.OS === "ios"}
+      >
         <Text style={styles.title}> Zaloguj się do aplikacji</Text>
-        <TextInput 
+        <TextInput
           style={styles.inputContainer}
-          placeholder='Login'
+          placeholder="Login"
           value={this.state.login}
-          onChangeText={(text) => this.setState({login: text})}
-          returnKeyType='next'
+          onChangeText={this.setAndValidateLogin}
+          returnKeyType="next"
         />
-        <TextInput 
+        <TextInput
           style={[styles.inputContainer]}
           secureTextEntry
-          placeholder='Hasło'
+          placeholder="Hasło"
           value={this.state.password}
-          onChangeText={(text) => this.setState({password: text})}
-          returnKeyType='done'
+          // onChangeText={text => this.setState({ password: text })}
+          onChangeText={this.setAndValidatePassword}
+          returnKeyType="done"
         />
-        {this.state.isPasswordInvalid 
-          && <Text style={styles.invalidPassword}>Hasło jest za krótkie</Text>}
-        <BasicButton 
-          title="Login" 
-          style={styles.loginButton} 
+        {!this.state.isPasswordValid && (
+          <Text style={styles.invalidPassword}>Hasło jest za krótkie</Text>
+        )}
+        <BasicButton
+          title="Login"
+          style={styles.loginButton}
           disabled={!this.state.canSubmit}
-          onPress={() => console.log('Log in')}
+          onPress={this.mockLogin}
         />
       </KeyboardAvoidingView>
     );
@@ -51,13 +95,13 @@ class SignIn extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     padding: 32,
-    justifyContent: 'center'
+    justifyContent: "center"
   },
   loginButton: {
     marginTop: 16,
-    backgroundColor: '#4E00B1'
+    backgroundColor: "#4E00B1"
   },
   inputContainer: {
     margin: 8,
@@ -66,13 +110,13 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   invalidPassword: {
-    color: 'red'
+    color: "red"
   },
   title: {
     fontSize: 32,
-    fontWeight: '600',
-    textAlign: 'center'
+    fontWeight: "600",
+    textAlign: "center"
   }
-})
+});
 
 export default SignIn;
